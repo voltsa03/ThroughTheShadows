@@ -12,6 +12,7 @@ public class PMovement : MonoBehaviour
     public float jump;
     private float moveVelocity;
     public float boostStrengh;
+  
 
     public AudioClip footstep;
     
@@ -50,7 +51,7 @@ public class PMovement : MonoBehaviour
 
       if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("keyboard input detected");
+           // Debug.Log("keyboard input detected");
             if (grounded)
                 Jump(true);
             else
@@ -67,7 +68,7 @@ public class PMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A) && walkbool && grounded || Input.GetKey(KeyCode.D) && walkbool && grounded)
         {
-            StartCoroutine(walkingcycle(walkingtime));
+           // StartCoroutine(walkingcycle(walkingtime));   Enable when sound is ready to be added
         }
 
 
