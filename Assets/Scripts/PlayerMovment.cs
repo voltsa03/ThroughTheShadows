@@ -6,9 +6,8 @@ public class PlayerMovment : MonoBehaviour
 {
  
     [SerializeField]
-    private int maxSpeed, speedMultipler, jumpMultiplyer, fallSpeed;
+    private int maxSpeed, speedMultipler, jumpMultiplyer;
 
-    [SerializeField]
     private float speedX;
 
     [SerializeField]
@@ -18,7 +17,7 @@ public class PlayerMovment : MonoBehaviour
 
     private float rayDistance, sideRayDistance;
 
-    private bool grounded = false, notFalling = true;
+    private bool grounded = false, notFalling = true, doubleJump = false;
     private Rigidbody rb;
 
     private Vector2 velocitySpeed;
@@ -71,13 +70,30 @@ public class PlayerMovment : MonoBehaviour
 
     void jumping()
     {
+       
         if (Input.GetKeyDown(KeyCode.Space) && grounded)
         {
-          
-                rb.velocity = new Vector2(rb.velocity.x, jumpMultiplyer);
+            StartCoroutine(doubleJumpDelay());
+            rb.velocity = new Vector2(rb.velocity.x, jumpMultiplyer);
+            
         }
+        if (Input.GetKeyDown(KeyCode.Space) && doubleJump)
+        {
+            Debug.Log("double jumping");
+            rb.velocity = new Vector2(rb.velocity.x, jumpMultiplyer);
+            doubleJump = false;
+        }
+       // if (Input.GetKeyDown(KeyCode.Space))
+          //  rb.velocity = new Vector2(rb.velocity.x, jumpMultiplyer);
     }
-           
+
+    IEnumerator doubleJumpDelay()
+    {
+
+        yield return new WaitForSeconds(0.2f);
+        doubleJump = true;
+    }
+
 
     void rayCasting()
     {
@@ -86,7 +102,11 @@ public class PlayerMovment : MonoBehaviour
         {
             rayDistance = hitDown.distance;
             if (rayDistance < 0.51)//_____________ set character hight__________________________________
+            {
                 grounded = true;
+                doubleJump = false;
+            }
+           
             else
                 grounded = false;
         }
@@ -118,19 +138,13 @@ public class PlayerMovment : MonoBehaviour
             else
                 speedX = 0;
         }
-
-        /*if (speedX == 30 && grounded == false)
-        {
-            Debug.Log("falling is progress");
-            rb.velocity = new Vector2(rb.velocity.x, -fallSpeed);
-        }*/
     }
       void debuging()
-    {
+      {
         Debug.Log(notFalling + " not falling");
         
         Debug.Log(grounded + " grounded");
   
 
-    }
+      }
 }
