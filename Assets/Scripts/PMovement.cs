@@ -49,11 +49,21 @@ public class PMovement : MonoBehaviour
     void Update()
     {
 
+
+        
+
       if (Input.GetKeyDown(KeyCode.Space))
         {
+
+           
+
            // Debug.Log("keyboard input detected");
             if (grounded)
+            {
                 Jump(true);
+                //Debug.Log("jump true");
+
+            }
             else
                 Jump(false);
 
@@ -81,10 +91,6 @@ public class PMovement : MonoBehaviour
         audioSource.volume = audioVolume;
         audioSource.Play();
     }
-
-
-    
-    
 
     IEnumerator walkingcycle(float walkingtime)
     {
@@ -117,6 +123,7 @@ public class PMovement : MonoBehaviour
     {
        // Debug.Log("Boost");
         grounded = true;
+        
         rb.velocity = transform.up * boostStrengh;
         if (other.gameObject.tag == "Boost")
         {
@@ -127,6 +134,7 @@ public class PMovement : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         grounded = false;
+
     }
 }
 
