@@ -6,7 +6,7 @@ public class PlayerMovment : MonoBehaviour
 {
  
     [SerializeField]
-    private int maxSpeed, speedMultipler, jumpMultiplyer;
+    private int maxSpeed, speedMultipler, jumpMultiplyer, secondJumpMultiplyer;
 
     private float speedX;
 
@@ -80,7 +80,7 @@ public class PlayerMovment : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && doubleJump)
         {
             Debug.Log("double jumping");
-            rb.velocity = new Vector2(rb.velocity.x, jumpMultiplyer);
+            rb.velocity = new Vector2(rb.velocity.x, secondJumpMultiplyer);
             doubleJump = false;
         }
        // if (Input.GetKeyDown(KeyCode.Space))
