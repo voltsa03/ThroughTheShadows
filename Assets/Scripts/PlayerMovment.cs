@@ -47,7 +47,7 @@ public class PlayerMovment : MonoBehaviour
 
         rayCasting();
 
-        debuging();
+        //debuging();
     }
 
     void movement()
