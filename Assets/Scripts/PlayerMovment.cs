@@ -6,12 +6,12 @@ public class PlayerMovment : MonoBehaviour
 {
  
     [SerializeField]
-    private int maxSpeed, speedMultipler, jumpMultiplyer, secondJumpMultiplyer;
+    private int maxSpeed, jumpMultiplyer, secondJumpMultiplyer;
 
     private float speedX;
 
     [SerializeField]
-    private float stoppingSpeed;
+    private float speedMultipler, stoppingSpeed;
 
 
 
@@ -23,8 +23,11 @@ public class PlayerMovment : MonoBehaviour
     private Vector2 velocitySpeed;
 
     int groundLayerMask = 1 << 3;
-    
 
+    public Transform raycastPoint1, raycastPoint2, raycastPoint3, raycastPoint4;
+
+
+    public GameObject playerObj;
 
     private void Awake()
     {
@@ -43,6 +46,8 @@ public class PlayerMovment : MonoBehaviour
         movement();
 
         jumping();
+
+        shrinking();
 
         rayCasting();
 
@@ -79,7 +84,7 @@ public class PlayerMovment : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space) && doubleJump)
         {
-            Debug.Log("double jumping");
+           // Debug.Log("double jumping");
             rb.velocity = new Vector2(rb.velocity.x, secondJumpMultiplyer);
             doubleJump = false;
         }
@@ -89,16 +94,38 @@ public class PlayerMovment : MonoBehaviour
 
     IEnumerator doubleJumpDelay()
     {
-
         yield return new WaitForSeconds(0.2f);
         doubleJump = true;
     }
 
 
+
+    void shrinking()
+    {//__________________________________________working on needs finishing 
+        int numSwitch = 0;
+        if (Input.GetKeyDown(KeyCode.Tab))
+            ++numSwitch;
+        
+        Debug.Log(numSwitch);
+        switch (numSwitch)
+        {
+            case 1:
+                playerObj.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                break;
+            case 2:
+                playerObj.transform.localScale = new Vector3(1f, 1f, 1f);
+                break;
+        }
+        if (numSwitch >= 3)
+            numSwitch = 0;
+        //________________________________________________________________
+    }
+
     void rayCasting()
     {
         RaycastHit hitDown;
-        if (Physics.Raycast(transform.position, Vector3.down, out hitDown, 1, groundLayerMask))// shoots a ray cast bellow the character
+        if (Physics.Raycast(raycastPoint3.position, Vector3.down, out hitDown, 1, groundLayerMask) ||
+            Physics.Raycast(raycastPoint4.position, Vector3.down, out hitDown, 1, groundLayerMask))// shoots a ray cast bellow the character
         {
             rayDistance = hitDown.distance;
             if (rayDistance < 0.51)//_____________ set character hight__________________________________
@@ -113,7 +140,8 @@ public class PlayerMovment : MonoBehaviour
       
 
         RaycastHit hitSide;
-        if (Physics.Raycast(transform.position, Vector3.right, out hitSide, 1) || Physics.Raycast(transform.position, Vector3.left, out hitSide, 1))
+        if (Physics.Raycast(raycastPoint1.position, Vector3.right, out hitSide, 1) || Physics.Raycast(raycastPoint2.position, Vector3.right, out hitSide, 1) || 
+            Physics.Raycast(raycastPoint1.position, Vector3.left, out hitSide, 1) || Physics.Raycast(raycastPoint2.position, Vector3.left, out hitSide, 1))
         {
             sideRayDistance = hitSide.distance;
             if (sideRayDistance < 0.51 && grounded == false)// _______________set character thickness__________________________
@@ -139,6 +167,7 @@ public class PlayerMovment : MonoBehaviour
                 speedX = 0;
         }
     }
+
       void debuging()
       {
         Debug.Log(notFalling + " not falling");
