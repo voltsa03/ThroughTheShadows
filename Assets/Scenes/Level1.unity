@@ -804,8 +804,10 @@ MonoBehaviour:
   maxSpeed: 4
   jumpMultiplyer: 5
   secondJumpMultiplyer: 4
+  speedX: 0
   speedMultipler: 0.5
-  stoppingSpeed: 0.4
+  stoppingSpeed: 1
+  dashingSpeed: 10
   raycastPoint1: {fileID: 1929173393}
   raycastPoint2: {fileID: 550019689}
   raycastPoint3: {fileID: 1443416143}

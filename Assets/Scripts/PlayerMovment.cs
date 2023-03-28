@@ -18,7 +18,7 @@ public class PlayerMovment : MonoBehaviour
 
     private float rayDistance, sideRayDistance;
 
-    private bool grounded = false, notFalling = true, doubleJump = false;
+    private bool grounded = false, notFalling = true, doubleJump = false, isDashing = false;
     private Rigidbody rb;
 
     private Vector2 velocitySpeed;
@@ -54,6 +54,9 @@ public class PlayerMovment : MonoBehaviour
 
         //debuging();
         dashing();
+
+
+        
     }
 
     void movement()
@@ -71,7 +74,8 @@ public class PlayerMovment : MonoBehaviour
         else 
             stopping();
 
-        velocitySpeed = horizontal * speedX;
+        //Mathf.RoundToInt(speedX);
+        velocitySpeed = horizontal * Mathf.RoundToInt(speedX);
     }
 
     void jumping()
@@ -85,7 +89,7 @@ public class PlayerMovment : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space) && doubleJump)
         {
-           // Debug.Log("double jumping");
+           //Debug.Log("double jumping");
             rb.velocity = new Vector2(rb.velocity.x, secondJumpMultiplyer);
             doubleJump = false;
         }
@@ -107,7 +111,7 @@ public class PlayerMovment : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
             ++numSwitch;
         
-        Debug.Log(numSwitch);
+        //Debug.Log(numSwitch);
         switch (numSwitch)
         {
             case 1:
@@ -125,13 +129,33 @@ public class PlayerMovment : MonoBehaviour
 
     void dashing()
     {
-         if (Input.GetKeyDown(KeyCode.Space) && Input.GetKeyDown(KeyCode.D))
-        {
+        float speedXValueHold = 0;
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
+            StartCoroutine(dashDelayRight(speedXValueHold));
 
-            rb.velocity = new Vector2(velocitySpeed.x, rb.velocity.y);
+        else if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
+            StartCoroutine(dashDelayLeft(speedXValueHold));
+           
+    }
 
-        }
+    IEnumerator dashDelayRight(float speedXValueHold) 
+    {
+        speedXValueHold = speedX;
+        isDashing = true;
+        speedX = dashingSpeed;
+        yield return new WaitForSeconds(0.2f);
+        speedX = speedXValueHold;
+        isDashing = false;
+    }
 
+    IEnumerator dashDelayLeft(float speedXValueHold) 
+    {
+        speedXValueHold = speedX;
+        isDashing = true;
+        speedX = -dashingSpeed;
+        yield return new WaitForSeconds(0.2f);
+        speedX = speedXValueHold;
+        isDashing = false;    
 
     }
 
@@ -146,10 +170,13 @@ public class PlayerMovment : MonoBehaviour
             {
                 grounded = true;
                 doubleJump = false;
+
             }
            
             else
                 grounded = false;
+
+
         }
       
 
@@ -171,7 +198,7 @@ public class PlayerMovment : MonoBehaviour
 
     void stopping()
     {
-        if(speedX != 0 && grounded)
+        if(speedX != 0 && grounded && !isDashing)
         {
             if (speedX > 0)
                 speedX -= stoppingSpeed;
