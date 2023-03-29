@@ -8,16 +8,17 @@ public class PlayerMovment : MonoBehaviour
     [SerializeField]
     private int maxSpeed, jumpMultiplyer, secondJumpMultiplyer;
 
+    [SerializeField]
     private float speedX;
 
     [SerializeField]
     private float speedMultipler, stoppingSpeed;
 
-
+    public int dashingSpeed;
 
     private float rayDistance, sideRayDistance;
 
-    private bool grounded = false, notFalling = true, doubleJump = false;
+    private bool grounded = false, notFalling = true, doubleJump = false, isDashing = false;
     private Rigidbody rb;
 
     private Vector2 velocitySpeed;
@@ -52,25 +53,29 @@ public class PlayerMovment : MonoBehaviour
         rayCasting();
 
         //debuging();
+        dashing();
+
+
+        
     }
 
     void movement()
     {
         Vector2 horizontal = transform.TransformDirection(Vector2.right);
       
-
         if (Input.GetKey(KeyCode.D) && (speedX < maxSpeed) && grounded && notFalling)
             speedX += speedMultipler;
         
            // curspeedX -= (speedMultipler / 2);
-
+        
         else if (Input.GetKey(KeyCode.A) && (speedX > -maxSpeed) && grounded && notFalling)
             speedX -= speedMultipler;
 
         else 
             stopping();
 
-        velocitySpeed = horizontal * speedX;
+        //Mathf.RoundToInt(speedX);
+        velocitySpeed = horizontal * Mathf.RoundToInt(speedX);
     }
 
     void jumping()
@@ -84,7 +89,7 @@ public class PlayerMovment : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space) && doubleJump)
         {
-           // Debug.Log("double jumping");
+           //Debug.Log("double jumping");
             rb.velocity = new Vector2(rb.velocity.x, secondJumpMultiplyer);
             doubleJump = false;
         }
@@ -106,7 +111,7 @@ public class PlayerMovment : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
             ++numSwitch;
         
-        Debug.Log(numSwitch);
+        //Debug.Log(numSwitch);
         switch (numSwitch)
         {
             case 1:
@@ -121,6 +126,39 @@ public class PlayerMovment : MonoBehaviour
         //________________________________________________________________
     }
 
+
+    void dashing()
+    {
+        float speedXValueHold = 0;
+        if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
+            StartCoroutine(dashDelayRight(speedXValueHold));
+
+        else if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
+            StartCoroutine(dashDelayLeft(speedXValueHold));
+           
+    }
+
+    IEnumerator dashDelayRight(float speedXValueHold) 
+    {
+        speedXValueHold = speedX;
+        isDashing = true;
+        speedX = dashingSpeed;
+        yield return new WaitForSeconds(0.2f);
+        speedX = speedXValueHold;
+        isDashing = false;
+    }
+
+    IEnumerator dashDelayLeft(float speedXValueHold) 
+    {
+        speedXValueHold = speedX;
+        isDashing = true;
+        speedX = -dashingSpeed;
+        yield return new WaitForSeconds(0.2f);
+        speedX = speedXValueHold;
+        isDashing = false;    
+
+    }
+
     void rayCasting()
     {
         RaycastHit hitDown;
@@ -132,10 +170,13 @@ public class PlayerMovment : MonoBehaviour
             {
                 grounded = true;
                 doubleJump = false;
+
             }
            
             else
                 grounded = false;
+
+
         }
       
 
@@ -157,7 +198,7 @@ public class PlayerMovment : MonoBehaviour
 
     void stopping()
     {
-        if(speedX != 0 && grounded)
+        if(speedX != 0 && grounded && !isDashing)
         {
             if (speedX > 0)
                 speedX -= stoppingSpeed;
@@ -173,7 +214,5 @@ public class PlayerMovment : MonoBehaviour
         Debug.Log(notFalling + " not falling");
         
         Debug.Log(grounded + " grounded");
-  
-
       }
 }
