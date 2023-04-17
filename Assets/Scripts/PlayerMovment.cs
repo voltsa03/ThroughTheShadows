@@ -6,19 +6,20 @@ public class PlayerMovment : MonoBehaviour
 {
  
     [SerializeField]
-    private int maxSpeed, jumpMultiplyer, secondJumpMultiplyer;
+    private int maxSpeed, maxSpeedInAir, jumpMultiplyer, secondJumpMultiplyer;
 
     [SerializeField]
     private float speedX;
 
     [SerializeField]
-    private float speedMultipler, stoppingSpeed;
+    private float speedMultipler, stoppingSpeed, inAirStoppingSpeed;
 
     public int dashingSpeed;
 
     private float rayDistance, sideRayDistance;
 
-    private bool grounded = false, notFalling = true, doubleJump = false, isDashing = false;
+    private bool notFalling = true, doubleJump = false, isDashing = false;
+    public bool grounded = false;
     private Rigidbody rb;
 
     private Vector2 velocitySpeed;
@@ -48,11 +49,12 @@ public class PlayerMovment : MonoBehaviour
 
         jumping();
 
-        shrinking();
+        //shrinking(); needs fixing 
 
         rayCasting();
 
         //debuging();
+
         dashing();
 
 
@@ -62,17 +64,23 @@ public class PlayerMovment : MonoBehaviour
     void movement()
     {
         Vector2 horizontal = transform.TransformDirection(Vector2.right);
-      
+
         if (Input.GetKey(KeyCode.D) && (speedX < maxSpeed) && grounded && notFalling)
             speedX += speedMultipler;
-        
-           // curspeedX -= (speedMultipler / 2);
-        
+
+        // curspeedX -= (speedMultipler / 2);
+
         else if (Input.GetKey(KeyCode.A) && (speedX > -maxSpeed) && grounded && notFalling)
             speedX -= speedMultipler;
 
-        else 
+
+       // else if (!grounded)
+          //  inAir();
+
+        else
             stopping();
+
+
 
         //Mathf.RoundToInt(speedX);
         velocitySpeed = horizontal * Mathf.RoundToInt(speedX);
@@ -162,12 +170,14 @@ public class PlayerMovment : MonoBehaviour
     void rayCasting()
     {
         RaycastHit hitDown;
-        if (Physics.Raycast(raycastPoint3.position, Vector3.down, out hitDown, 1, groundLayerMask) ||
-            Physics.Raycast(raycastPoint4.position, Vector3.down, out hitDown, 1, groundLayerMask))// shoots a ray cast bellow the character
+        if (Physics.Raycast(raycastPoint3.position, Vector3.down, out hitDown, 5, groundLayerMask) ||
+            Physics.Raycast(raycastPoint4.position, Vector3.down, out hitDown, 5, groundLayerMask))// shoots a ray cast bellow the character
         {
             rayDistance = hitDown.distance;
-            if (rayDistance < 0.51)//_____________ set character hight__________________________________
+            if (rayDistance < 0.08)//_____________ set character hight__________________________________ distance off the ground
             {
+                
+                
                 grounded = true;
                 doubleJump = false;
 
@@ -175,8 +185,7 @@ public class PlayerMovment : MonoBehaviour
            
             else
                 grounded = false;
-
-
+            
         }
       
 
@@ -185,8 +194,9 @@ public class PlayerMovment : MonoBehaviour
             Physics.Raycast(raycastPoint1.position, Vector3.left, out hitSide, 1) || Physics.Raycast(raycastPoint2.position, Vector3.left, out hitSide, 1))
         {
             sideRayDistance = hitSide.distance;
-            if (sideRayDistance < 0.51 && grounded == false)// _______________set character thickness__________________________
+            if (sideRayDistance < 0.50 && grounded == false)// _______________set character thickness__________________________ thickness of character 
             {
+                //Debug.Log("raytrace side hit");
                 speedX = 0;
                 notFalling = false;
             }
@@ -196,18 +206,48 @@ public class PlayerMovment : MonoBehaviour
         }
     }
 
+
+    void inAir()
+    {
+        if (speedX > maxSpeedInAir)
+            speedX -= inAirStoppingSpeed;
+        else if (speedX < -maxSpeedInAir)
+            speedX += inAirStoppingSpeed;
+        
+    }
     void stopping()
     {
-        if(speedX != 0 && grounded && !isDashing)
+        int intSpeedX = 0;
+        Mathf.RoundToInt(speedX);
+        intSpeedX = (int)speedX;
+        //Debug.Log(intSpeedX);
+        if (speedX != 0 && grounded && !isDashing)
         {
             if (speedX > 0)
-                speedX -= stoppingSpeed;
+            {
+                float zero = 0;
+                zero -= speedX;
+               speedX -= stoppingSpeed;
+                //Debug.Log("speedx -");
+                //speedX -= zero;
+
+            }
+                
             else if (speedX < 0)
+            {
                 speedX += stoppingSpeed;
-            else
-                speedX = 0;
+                //Debug.Log("speedx +");
+                float zero = 0;
+                zero -= intSpeedX;
+                
+                //Debug.Log(zero);
+                //speedX += (zero/ 5);
+            }
+           
         }
     }
+
+
 
       void debuging()
       {
