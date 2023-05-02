@@ -45,3 +45,6 @@ TagManager:
   - name: ground layer
     uniqueID: 481663463
     locked: 0
+  - name: player
+    uniqueID: 2071081991
+    locked: 0

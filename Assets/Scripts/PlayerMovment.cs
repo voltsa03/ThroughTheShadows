@@ -6,30 +6,40 @@ public class PlayerMovment : MonoBehaviour
 {
  
     [SerializeField]
-    private int maxSpeed, maxSpeedInAir, jumpMultiplyer, secondJumpMultiplyer;
+    private int maxSpeed, jumpMultiplyer, secondJumpMultiplyer;
+
+
 
     [SerializeField]
-    private float speedX;
+    private float speedX, dashingDelay;
+
+    [SerializeField, HideInInspector]
+    private float speedMultipler, stoppingSpeed;
+
+    private float inAirStoppingSpeed;// not used
+
+    private float maxSpeedInAir;// not used
 
     [SerializeField]
-    private float speedMultipler, stoppingSpeed, inAirStoppingSpeed;
-
-    public int dashingSpeed;
+    private int dashingSpeed;
 
     private float rayDistance, sideRayDistance;
 
     private bool notFalling = true, doubleJump = false, isDashing = false;
-    public bool grounded = false;
+
+    [SerializeField]
+    private bool grounded = false;
+
     private Rigidbody rb;
 
     private Vector2 velocitySpeed;
 
     int groundLayerMask = 1 << 3;
+    [SerializeField]
+    private Transform raycastPoint1, raycastPoint2, raycastPoint3, raycastPoint4;
 
-    public Transform raycastPoint1, raycastPoint2, raycastPoint3, raycastPoint4;
 
-
-    public GameObject playerObj;
+    [SerializeField] private GameObject playerObj, dashParticalEffect;
 
     private void Awake()
     {
@@ -66,12 +76,25 @@ public class PlayerMovment : MonoBehaviour
         Vector2 horizontal = transform.TransformDirection(Vector2.right);
 
         if (Input.GetKey(KeyCode.D) && (speedX < maxSpeed) && grounded && notFalling)
+        {
             speedX += speedMultipler;
+            //Debug.Log("D key pressed \n");
+            //Debug.Log(speedX);
+
+        }
+           
 
         // curspeedX -= (speedMultipler / 2);
 
         else if (Input.GetKey(KeyCode.A) && (speedX > -maxSpeed) && grounded && notFalling)
+        {
             speedX -= speedMultipler;
+
+            //Debug.Log("A key pressed \n");
+            //Debug.Log(speedX);
+        }
+            
+
 
 
        // else if (!grounded)
@@ -136,14 +159,16 @@ public class PlayerMovment : MonoBehaviour
 
 
     void dashing()
-    {
-        float speedXValueHold = 0;
-        if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
-            StartCoroutine(dashDelayRight(speedXValueHold));
+    { if (!isDashing)
+        {
+            float speedXValueHold = 0;
+            if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.D))
+                StartCoroutine(dashDelayRight(speedXValueHold));
 
-        else if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
-            StartCoroutine(dashDelayLeft(speedXValueHold));
-           
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKey(KeyCode.A))
+                StartCoroutine(dashDelayLeft(speedXValueHold));
+        }
+
     }
 
     IEnumerator dashDelayRight(float speedXValueHold) 
@@ -151,8 +176,10 @@ public class PlayerMovment : MonoBehaviour
         speedXValueHold = speedX;
         isDashing = true;
         speedX = dashingSpeed;
+        dashingEffectRight();
         yield return new WaitForSeconds(0.2f);
         speedX = speedXValueHold;
+        yield return new WaitForSeconds(dashingDelay);
         isDashing = false;
     }
 
@@ -161,10 +188,24 @@ public class PlayerMovment : MonoBehaviour
         speedXValueHold = speedX;
         isDashing = true;
         speedX = -dashingSpeed;
+        dashingEffectLeft();
         yield return new WaitForSeconds(0.2f);
         speedX = speedXValueHold;
-        isDashing = false;    
+        yield return new WaitForSeconds(dashingDelay);
+        isDashing = false;
 
+    }
+
+
+
+    void dashingEffectRight()
+    {
+        Instantiate(dashParticalEffect, playerObj.transform.position, dashParticalEffect.transform.rotation = Quaternion.Euler(new Vector3(0,-90, 0)));// rotates to the left
+    }
+
+    void dashingEffectLeft()
+    {
+        Instantiate(dashParticalEffect, playerObj.transform.position, dashParticalEffect.transform.rotation = Quaternion.Euler(new Vector3(0, 90, 0)));
     }
 
     void rayCasting()
