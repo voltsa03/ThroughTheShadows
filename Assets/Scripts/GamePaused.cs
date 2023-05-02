@@ -2,17 +2,14 @@
 
 // // Connecting main Unity Engine, that allows to use  Unity main classes and functions.
 using UnityEngine;
-
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 // Creating a public class 'GamePaused', which is derived from 'MonoBehaviour' class in Unity.
 public class GamePaused : MonoBehaviour
 {
     // Creating boolean 'isPaused'. True by default
     private bool isPaused = true;
-
-    // Creating new variable for saving scene before pause.
-    private int sceneBeforePause;
+   
 
     // Creating method 'Pause Game'.
     public void PauseGame()
