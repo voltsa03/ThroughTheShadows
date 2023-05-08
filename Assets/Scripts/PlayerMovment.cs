@@ -231,8 +231,8 @@ public class PlayerMovment : MonoBehaviour
       
 
         RaycastHit hitSide;
-        if (Physics.Raycast(raycastPoint1.position, Vector3.right, out hitSide, 1) || Physics.Raycast(raycastPoint2.position, Vector3.right, out hitSide, 1) || 
-            Physics.Raycast(raycastPoint1.position, Vector3.left, out hitSide, 1) || Physics.Raycast(raycastPoint2.position, Vector3.left, out hitSide, 1))
+        if (Physics.Raycast(raycastPoint1.position, Vector3.right, out hitSide, 1, groundLayerMask) || Physics.Raycast(raycastPoint2.position, Vector3.right, out hitSide, 1, groundLayerMask) || 
+            Physics.Raycast(raycastPoint1.position, Vector3.left, out hitSide, 1, groundLayerMask) || Physics.Raycast(raycastPoint2.position, Vector3.left, out hitSide, 1, groundLayerMask))
         {
             sideRayDistance = hitSide.distance;
             if (sideRayDistance < 0.50 && grounded == false)// _______________set character thickness__________________________ thickness of character 
