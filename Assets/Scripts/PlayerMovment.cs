@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovment : MonoBehaviour
@@ -25,7 +26,7 @@ public class PlayerMovment : MonoBehaviour
 
     private float rayDistance, sideRayDistance;
 
-    private bool notFalling = true, doubleJump = false, isDashing = false;
+    private bool notFalling = true, doubleJump = false, isDashing = false, stopDashing = true;
 
     [SerializeField]
     private bool grounded = false;
@@ -67,7 +68,7 @@ public class PlayerMovment : MonoBehaviour
 
         dashing();
 
-
+      
         
     }
 
@@ -82,7 +83,7 @@ public class PlayerMovment : MonoBehaviour
             //Debug.Log(speedX);
 
         }
-           
+
 
         // curspeedX -= (speedMultipler / 2);
 
@@ -93,17 +94,23 @@ public class PlayerMovment : MonoBehaviour
             //Debug.Log("A key pressed \n");
             //Debug.Log(speedX);
         }
-            
 
 
 
-       // else if (!grounded)
-          //  inAir();
 
-        else
+        // else if (!grounded)
+        //  inAir();
+
+        else if (!Input.GetKey(KeyCode.A) || !Input.GetKey(KeyCode.D))
             stopping();
 
+       // else
+         //   stopping();
 
+        
+            
+
+        
 
         //Mathf.RoundToInt(speedX);
         velocitySpeed = horizontal * Mathf.RoundToInt(speedX);
@@ -175,10 +182,12 @@ public class PlayerMovment : MonoBehaviour
     {
         speedXValueHold = speedX;
         isDashing = true;
+        stopDashing = false;
         speedX = dashingSpeed;
         dashingEffectRight();
         yield return new WaitForSeconds(0.2f);
         speedX = speedXValueHold;
+        stopDashing = true;
         yield return new WaitForSeconds(dashingDelay);
         isDashing = false;
     }
@@ -187,10 +196,12 @@ public class PlayerMovment : MonoBehaviour
     {
         speedXValueHold = speedX;
         isDashing = true;
+        stopDashing = false;
         speedX = -dashingSpeed;
         dashingEffectLeft();
         yield return new WaitForSeconds(0.2f);
         speedX = speedXValueHold;
+        stopDashing = true;
         yield return new WaitForSeconds(dashingDelay);
         isDashing = false;
 
@@ -243,10 +254,18 @@ public class PlayerMovment : MonoBehaviour
             }
             else
                 notFalling = true;
-                
-        }
-    }
 
+        }
+        
+        Debug.DrawRay(raycastPoint1.position, Vector3.right * sideRayDistance, Color.green);
+        Debug.DrawRay(raycastPoint1.position, Vector3.left * sideRayDistance, Color.red);
+        Debug.DrawRay(raycastPoint2.position, Vector3.right * sideRayDistance, Color.green);
+        Debug.DrawRay(raycastPoint2.position, Vector3.left * sideRayDistance, Color.red);  
+        Debug.DrawRay(raycastPoint3.position, Vector3.down * rayDistance, Color.green);
+        Debug.DrawRay(raycastPoint4.position, Vector3.down * rayDistance, Color.red);
+        
+    }
+  
 
     void inAir()
     {
@@ -258,11 +277,13 @@ public class PlayerMovment : MonoBehaviour
     }
     void stopping()
     {
+        Debug.Log("Stop void running \n");
+        Debug.Log("\n");
         int intSpeedX = 0;
         Mathf.RoundToInt(speedX);
         intSpeedX = (int)speedX;
         //Debug.Log(intSpeedX);
-        if (speedX != 0 && grounded && !isDashing)
+        if (speedX != 0 && grounded && stopDashing)
         {
             if (speedX > 0)
             {
