@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class PlayerMovment : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class PlayerMovment : MonoBehaviour
 
     private bool notFalling = true, doubleJump = false, isDashing = false, stopDashing = true;
 
+    private bool walkingLeft, walkingRight;
+
     [SerializeField]
     private bool grounded = false;
 
@@ -42,10 +45,19 @@ public class PlayerMovment : MonoBehaviour
 
     [SerializeField] private GameObject playerObj, dashParticalEffect;
 
+    public Animator animator;
+    public GameObject animObj;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
        
+       
+    }
+    private void Start()
+    {
+       animator = animObj.GetComponent<Animator>();
+        animObj.SetActive(true);
     }
     private void FixedUpdate()
     {
@@ -68,8 +80,7 @@ public class PlayerMovment : MonoBehaviour
 
         dashing();
 
-      
-        
+        anim();
     }
 
     void movement()
@@ -85,6 +96,7 @@ public class PlayerMovment : MonoBehaviour
         }
 
 
+
         // curspeedX -= (speedMultipler / 2);
 
         else if (Input.GetKey(KeyCode.A) && (speedX > -maxSpeed) && grounded && notFalling)
@@ -95,9 +107,6 @@ public class PlayerMovment : MonoBehaviour
             //Debug.Log(speedX);
         }
 
-
-
-
         // else if (!grounded)
         //  inAir();
 
@@ -106,11 +115,6 @@ public class PlayerMovment : MonoBehaviour
 
        // else
          //   stopping();
-
-        
-            
-
-        
 
         //Mathf.RoundToInt(speedX);
         velocitySpeed = horizontal * Mathf.RoundToInt(speedX);
@@ -277,8 +281,7 @@ public class PlayerMovment : MonoBehaviour
     }
     void stopping()
     {
-        Debug.Log("Stop void running \n");
-        Debug.Log("\n");
+      
         int intSpeedX = 0;
         Mathf.RoundToInt(speedX);
         intSpeedX = (int)speedX;
@@ -310,6 +313,51 @@ public class PlayerMovment : MonoBehaviour
     }
 
 
+    void anim()
+    {
+        if (Input.GetKey(KeyCode.A) && grounded)
+        {
+            walkingLeft = true;
+            walkingRight = false;
+        }
+          
+
+        else if (Input.GetKeyUp(KeyCode.A) && grounded)
+        {
+            walkingLeft = false;
+        }
+            
+
+
+        else if (Input.GetKey(KeyCode.D) && grounded)
+        {
+            walkingRight = true;
+            walkingLeft = false;
+        }
+            
+
+        else if (Input.GetKeyUp(KeyCode.D) && grounded)
+        {
+            walkingRight = false;
+        }
+         
+        else
+        {
+            walkingLeft = false;
+            walkingRight = false;
+        }
+
+        /*if (speedX < 0)
+        {
+            walkingLeft = true;
+        }
+        if (speedX > 0) 
+        {
+            walkingRight = true;
+        }*/
+        animator.SetBool("walk Left", walkingLeft);
+        animator.SetBool("walk right", walkingRight);
+    }
 
       void debuging()
       {

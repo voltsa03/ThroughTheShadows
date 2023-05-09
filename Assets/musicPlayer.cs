@@ -7,6 +7,7 @@ public class musicPlayer : MonoBehaviour
     [Header("Sound Veribles")]
     [SerializeField]
     private AudioClip music;
+    [SerializeField]
     private AudioSource audioSource;
 
     [SerializeField]
